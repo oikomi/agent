@@ -17,6 +17,7 @@ type AgentConfig struct {
 	configFile         string
 	Server             string
 	LogFile            string
+	DataPath           string
 }
 
 func NewAgentConfig(configFile string) *AgentConfig {
