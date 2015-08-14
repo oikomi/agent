@@ -7,7 +7,7 @@
 
  package main
 
- import (
+import (
  	"fmt"
  	"flag"
 	"./glog"
