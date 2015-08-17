@@ -2,5 +2,9 @@
 	"Server"             : "0.0.0.0:17000",
 	"LogFile"            : "agent.log",
 
-	"DataPath"           : "/tmp/apm_record"
+	"StatsDataPath"           : "/tmp/apm_file_record_stats",
+	"EventsDataPath"           : "/tmp/apm_file_record_events",
+
+	"ParseDataInterval"  : 20,
+	"ParseDataExpire"    : 50
 }

@@ -9,6 +9,7 @@ package main
 
 import (
 	"os"
+	"time"
 	"encoding/json"
 	"./glog"
 )
@@ -17,7 +18,11 @@ type AgentConfig struct {
 	configFile         string
 	Server             string
 	LogFile            string
-	DataPath           string
+	StatsDataPath      string
+	EventsDataPath     string
+
+	ParseDataInterval  time.Duration
+	ParseDataExpire    time.Duration
 }
 
 func NewAgentConfig(configFile string) *AgentConfig {

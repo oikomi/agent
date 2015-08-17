@@ -10,7 +10,10 @@
 import (
  	"fmt"
  	"flag"
+ 	"time"
+ 	"encoding/json"
 	"./glog"
+	"./parser"
 )
 
 
@@ -47,6 +50,35 @@ func init() {
 var InputConfFile = flag.String("conf_file", "agent.json", "input conf file name") 
 
 
+func doParseData(cfg *AgentConfig) {
+	stats, err := parser.StatsParse(cfg.StatsDataPath)
+	if err != nil {
+		glog.Error(err.Error())
+		return
+	}
+
+	b, err := json.Marshal(stats)
+	if err != nil {
+		glog.Error(err.Error())
+		return
+	}
+	glog.Info(string(b))
+
+	events, err := parser.EventsParse(cfg.EventsDataPath)
+	if err != nil {
+		glog.Error(err.Error())
+		return
+	}
+
+	b, err = json.Marshal(events)
+	if err != nil {
+		glog.Error(err.Error())
+		return
+	}
+	glog.Info(string(b))
+}
+
+
  func main() {
 	version()
 	fmt.Printf("built on %s\n", BuildTime())
@@ -57,6 +89,47 @@ var InputConfFile = flag.String("conf_file", "agent.json", "input conf file name
 		glog.Error(err.Error())
 		return
 	}
+
+	timer := time.NewTicker(cfg.ParseDataInterval * time.Second)
+	ttl := time.After(cfg.ParseDataExpire * time.Second)
+	for {
+		select {
+		case <-timer.C:
+			
+			go func() {
+				doParseData(cfg)
+			}()
+		case <-ttl:
+			break
+		}
+	}
+
 	
+	// stats, err := parser.StatsParse(cfg.StatsDataPath)
+	// if err != nil {
+	// 	glog.Error(err.Error())
+	// 	return
+	// }
+
+	// b, err := json.Marshal(stats)
+	// if err != nil {
+	// 	glog.Error(err.Error())
+	// 	return
+	// }
+	// glog.Info(string(b))
+
+	// events, err := parser.EventsParse(cfg.EventsDataPath)
+	// if err != nil {
+	// 	glog.Error(err.Error())
+	// 	return
+	// }
+
+	// b, err = json.Marshal(events)
+	// if err != nil {
+	// 	glog.Error(err.Error())
+	// 	return
+	// }
+	// glog.Info(string(b))
+
 
 }

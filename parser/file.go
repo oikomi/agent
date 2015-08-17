@@ -20,6 +20,12 @@ type DataFile struct {
 	content     []byte
 }
 
+func NewDataFile(filePath string) *DataFile {
+	return &DataFile {
+		filePath : filePath,
+	}
+}
+
 
 func (f *DataFile) isFileExist() bool {
 	_, err := os.Stat(f.filePath)
