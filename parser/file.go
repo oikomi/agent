@@ -32,7 +32,7 @@ func (f *DataFile) isFileExist() bool {
 
 func cat(scanner *bufio.Scanner) error {
     for scanner.Scan() {
-        fmt.Println(scanner.Text())    
+        fmt.Println(scanner.Text()) 
     
     }
     return scanner.Err()
