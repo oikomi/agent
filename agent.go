@@ -43,11 +43,12 @@ func version() {
 }
 
 func init() {
-	flag.Set("alsologtostderr", "true")
-	flag.Set("log_dir", "false")
+	//flag.Set("alsologtostderr", "true")
+	//flag.Set("log_dir", "false")
 }
 
 var InputConfFile = flag.String("conf_file", "agent.json", "input conf file name") 
+//var logFile = flag.String("log_dir", "/tmp/agent.log", "log file name") 
 
 
 func doParseData(cfg *AgentConfig) {
@@ -104,32 +105,5 @@ func doParseData(cfg *AgentConfig) {
 		}
 	}
 
-	
-	// stats, err := parser.StatsParse(cfg.StatsDataPath)
-	// if err != nil {
-	// 	glog.Error(err.Error())
-	// 	return
-	// }
-
-	// b, err := json.Marshal(stats)
-	// if err != nil {
-	// 	glog.Error(err.Error())
-	// 	return
-	// }
-	// glog.Info(string(b))
-
-	// events, err := parser.EventsParse(cfg.EventsDataPath)
-	// if err != nil {
-	// 	glog.Error(err.Error())
-	// 	return
-	// }
-
-	// b, err = json.Marshal(events)
-	// if err != nil {
-	// 	glog.Error(err.Error())
-	// 	return
-	// }
-	// glog.Info(string(b))
-
-
+	glog.Flush()
 }

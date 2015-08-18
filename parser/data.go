@@ -121,8 +121,6 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
         return tmp1 < tmp2
     }})
 
-    glog.Info(statsList[0])
-
 	averageRespTime = (totalRespTime / (float64)(totalReqCount))
 
 	if len(statsList) <= 5 {
@@ -133,7 +131,6 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 
 		//&StatsSummary {totalRespTime, totalReqCount, statsList}
 	} else {
-		glog.Info(statsList)
 		//statsSummary = &StatsSummary {totalRespTime, totalReqCount, statsList[0:5]}
 		statsSummary = NewStatsSummary()
 		statsSummary.AverageRespTime = averageRespTime
