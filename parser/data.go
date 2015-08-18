@@ -16,9 +16,9 @@ import (
 )
 
 type StatsSummary struct {
-	TotalRespTime     float64
-	TotalReqCount     int
-	Top5Slow          []*Stats
+	AverageRespTime     float64
+	TotalReqCount       int
+	Top5Slow            []*Stats
 }
 
 func NewStatsSummary() *StatsSummary {
@@ -59,12 +59,12 @@ func NewStats() *Stats{
 func (s *Stats) buildStats(data []string) *Stats {
 	if len(data) == 7 {
 		return &Stats {
-			Time : strings.TrimSpace(data[0]),
-			Script : strings.TrimSpace(data[1]),
-			Host : strings.TrimSpace(data[2]),
-			Client : strings.TrimSpace(data[3]),
-			Method : strings.TrimSpace(data[4]),
-			Status : strings.TrimSpace(data[5]),
+			Time     : strings.TrimSpace(data[0]),
+			Script   : strings.TrimSpace(data[1]),
+			Host     : strings.TrimSpace(data[2]),
+			Client   : strings.TrimSpace(data[3]),
+			Method   : strings.TrimSpace(data[4]),
+			Status   : strings.TrimSpace(data[5]),
 			Duration : strings.TrimSpace(data[6]),
 		}
 	}
@@ -76,30 +76,24 @@ func (s *Stats) buildStats(data []string) *Stats {
 func (s *Stats) parse(path string) (*StatsSummary, error) {
 	var err error
 	var statsSummary *StatsSummary
-	//var averageRespTime float64
+	var averageRespTime float64
 	statsList := make([]*Stats, 0)
 
 	var totalRespTime float64
 	df := NewDataFile(path)
 
 	df.GetAllContent()
-	//glog.Info(string(df.content))
-
 	dataList := strings.Split(string(df.content), "\n")
 
 	totalReqCount := len(dataList)
 
-	//glog.Info(dataList[0])
-
 	for _, data := range dataList {
-		//glog.Info(data)
 		lineList := strings.Split(string(data), ",")
 		stats := s.buildStats(lineList)
 		if stats != nil {
 			statsList = append(statsList, stats)
 		}
 		
-
 		if len(lineList) == 7 {
 			tmpRespTime , err := strconv.ParseFloat(strings.TrimSpace(lineList[6]), 64)
 			if err != nil {
@@ -110,13 +104,9 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 
 		}
 
-		//glog.Info(lineList)
 	}
 
-	//glog.Info(statsList)
-
 	sort.Sort(StatsWrapper{statsList, func (p, q *Stats) bool {
-
         tmp1 , err := strconv.ParseFloat(q.Duration, 64) 
 		if err != nil {
 			glog.Error(err.Error())
@@ -133,11 +123,11 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 
     glog.Info(statsList[0])
 
-	//averageRespTime = (float64)(totalRespTime / totalReqCount)
+	averageRespTime = (totalRespTime / (float64)(totalReqCount))
 
 	if len(statsList) <= 5 {
 		statsSummary = NewStatsSummary()
-		statsSummary.TotalRespTime = totalRespTime
+		statsSummary.AverageRespTime = averageRespTime
 		statsSummary.TotalReqCount = totalReqCount
 		statsSummary.Top5Slow = statsList
 
@@ -146,10 +136,9 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 		glog.Info(statsList)
 		//statsSummary = &StatsSummary {totalRespTime, totalReqCount, statsList[0:5]}
 		statsSummary = NewStatsSummary()
-		statsSummary.TotalRespTime = totalRespTime
+		statsSummary.AverageRespTime = averageRespTime
 		statsSummary.TotalReqCount = totalReqCount
 		for i:=0; i<5; i++ {
-			glog.Info(statsList[i])
 			statsSummary.Top5Slow = append(statsSummary.Top5Slow, statsList[i])
 		}
 		
@@ -159,8 +148,6 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 	return statsSummary, err
 
 }
-
-
 
 func EventsParse(path string) ([]*Events, error) {
 	e := NewEvents()
