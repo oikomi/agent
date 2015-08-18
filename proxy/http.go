@@ -8,11 +8,11 @@
 package proxy
 
 import (
-    "net/http"
-    "io/ioutil"
     "fmt"
     "time"
     "bytes"
+    "net/http"
+    "io/ioutil"
     "../glog"
 )
 
@@ -23,9 +23,9 @@ type ReqHttp struct {
 	header     http.Header   
 }
 
-func NewReqHttp(url string, method string, timeout int) *ReqHttp {
+func NewReqHttp(url string, method string, timeout time.Duration) *ReqHttp {
 	client := http.Client {
-	    Timeout: time.Duration(5 * time.Second),
+	    Timeout: time.Duration(timeout * time.Second),
 	}
 
 	return &ReqHttp {
