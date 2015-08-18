@@ -32,11 +32,16 @@ func NewReqHttp(url string, method string, timeout time.Duration) *ReqHttp {
 		method     : method,
 		url        : url,
 		httpClient : &client,
+		header     : make(http.Header),
 	}
 }
 
 func (r *ReqHttp) AddHeader(key, val string) {
 	r.header.Add(key, val)
+}
+
+func (r *ReqHttp) SetHeader(key, val string) {
+	r.header.Set(key, val)
 }
 
 func (r *ReqHttp) DoGetData() error {
@@ -89,13 +94,17 @@ func (r *ReqHttp) DoPostData(body []byte) error {
 	}
 	
 	if response.StatusCode == 200 {
-        body, err := ioutil.ReadAll(response.Body)
-        if err != nil {
- 			glog.Error(err.Error())
-			return err       	
-        }
-        bodystr := string(body);
-        fmt.Println(bodystr)
+   //      body, err := ioutil.ReadAll(response.Body)
+   //      if err != nil {
+ 		// 	glog.Error(err.Error())
+			// return err       	
+   //      }
+   //      bodystr := string(body);
+   //      fmt.Println(bodystr)
+    } else {
+    	glog.Error(response.StatusCode)
+    	glog.Error(POST_DATA_FAILED)
+		return POST_DATA_FAILED
     }
 
 	return err

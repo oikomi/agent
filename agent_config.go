@@ -16,10 +16,14 @@ import (
 
 type AgentConfig struct {
 	configFile         string
-	Server             string
+	ReportServer       string
 	LogFile            string
+
 	StatsDataPath      string
+	StatsDataService   string
+
 	EventsDataPath     string
+	EventsDataService  string
 
 	ParseDataInterval  time.Duration
 	ParseDataExpire    time.Duration

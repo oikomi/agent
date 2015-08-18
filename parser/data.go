@@ -82,7 +82,19 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 	var totalRespTime float64
 	df := NewDataFile(path)
 
-	df.GetAllContent()
+	err = df.GetAllContent()
+	if err != nil {
+		glog.Error(err.Error())
+		return nil, err
+	}
+
+	err = df.rmFile()
+	if err != nil {
+		glog.Error(err.Error())
+		return nil, err
+	}
+
+
 	dataList := strings.Split(string(df.content), "\n")
 
 	totalReqCount := len(dataList)
@@ -103,7 +115,6 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 			totalRespTime += tmpRespTime
 
 		}
-
 	}
 
 	sort.Sort(StatsWrapper{statsList, func (p, q *Stats) bool {
@@ -114,8 +125,7 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 		}
         tmp2 , err := strconv.ParseFloat(p.Duration, 64)
 		if err != nil {
-			glog.Error(err.Error())
-			
+			glog.Error(err.Error())		
 		}
 
         return tmp1 < tmp2
@@ -128,22 +138,16 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 		statsSummary.AverageRespTime = averageRespTime
 		statsSummary.TotalReqCount = totalReqCount
 		statsSummary.Top5Slow = statsList
-
-		//&StatsSummary {totalRespTime, totalReqCount, statsList}
 	} else {
-		//statsSummary = &StatsSummary {totalRespTime, totalReqCount, statsList[0:5]}
 		statsSummary = NewStatsSummary()
 		statsSummary.AverageRespTime = averageRespTime
 		statsSummary.TotalReqCount = totalReqCount
 		for i:=0; i<5; i++ {
 			statsSummary.Top5Slow = append(statsSummary.Top5Slow, statsList[i])
-		}
-		
+		}	
 	}
 
-
 	return statsSummary, err
-
 }
 
 func EventsParse(path string) ([]*Events, error) {
@@ -173,10 +177,10 @@ func NewEvents() *Events {
 func (e *Events) buildEvents(data []string) *Events{
 	if len(data) == 4 {
 		return &Events {
-			Time : strings.TrimSpace(data[0]),
+			Time   : strings.TrimSpace(data[0]),
 			Script : strings.TrimSpace(data[1]),
-			Msg : strings.TrimSpace(data[2]),
-			Trace : strings.TrimSpace(data[3]),
+			Msg    : strings.TrimSpace(data[2]),
+			Trace  : strings.TrimSpace(data[3]),
 		}
 	}
 
@@ -187,10 +191,19 @@ func (e *Events) buildEvents(data []string) *Events{
 func (e *Events) parse(path string) ([]*Events, error){
 	eventsList := make([]*Events, 0)
 	df := NewDataFile(path)
-	df.GetAllContent()
+	err := df.GetAllContent()
+	if err != nil {
+		glog.Error(err.Error())
+		return nil, err
+	}
+	err = df.rmFile()
+	if err != nil {
+		glog.Error(err.Error())
+		return nil, err
+	}
+
 	dataList := strings.Split(string(df.content), "\n")
 	for _, data := range dataList {
-		//glog.Info(data)
 		lineList := strings.Split(string(data), "+")
 		events := e.buildEvents(lineList)
 		if events != nil {

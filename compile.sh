@@ -1,3 +1,3 @@
 #! /bin/bash
 
-go build -o agent
+go build -o baidu-daemon

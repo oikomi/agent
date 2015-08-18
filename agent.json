@@ -1,9 +1,12 @@
 {
-	"Server"             : "0.0.0.0:17000",
+	"ReportServer"       : "http://report.uaq.baidu.com",
 	"LogFile"            : "agent.log",
 
-	"StatsDataPath"           : "/tmp/apm_file_record_stats",
-	"EventsDataPath"           : "/tmp/apm_file_record_events",
+	"StatsDataPath"      : "/tmp/apm_file_record_stats",
+	"StatsDataService"   : "/server/php/performance",
+
+	"EventsDataPath"     : "/tmp/apm_file_record_events",
+	"EventsDataService"  : "/server/php/exception",
 
 	"ParseDataInterval"  : 20,
 	"ParseDataExpire"    : 50

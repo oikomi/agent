@@ -14,6 +14,7 @@ import (
  	"encoding/json"
 	"./glog"
 	"./parser"
+	"./proxy"
 )
 
 
@@ -43,15 +44,40 @@ func version() {
 }
 
 func init() {
-	//flag.Set("alsologtostderr", "true")
-	//flag.Set("log_dir", "false")
+	flag.Set("alsologtostderr", "false")
+	flag.Set("log_dir", "/tmp/agent_log")
 }
 
 var InputConfFile = flag.String("conf_file", "agent.json", "input conf file name") 
 //var logFile = flag.String("log_dir", "/tmp/agent.log", "log file name") 
 
 
-func doParseData(cfg *AgentConfig) {
+func doParseEventsData(cfg *AgentConfig) {
+	events, err := parser.EventsParse(cfg.EventsDataPath)
+	if err != nil {
+		glog.Error(err.Error())
+		return
+	}
+
+	b, err := json.Marshal(events)
+	if err != nil {
+		glog.Error(err.Error())
+		return
+	}
+
+	r := proxy.NewReqHttp(cfg.ReportServer + cfg.EventsDataService, "POST", 5)
+	r.SetHeader("Content-Type", "application/json")
+	r.SetHeader("X-App-License-Key", "000000")
+	glog.Info(string(b))
+
+	err = r.DoPostData(b)
+	if err != nil {
+		glog.Error(err.Error())
+		return
+	}
+}
+
+func doParseStatsData(cfg *AgentConfig) {
 	stats, err := parser.StatsParse(cfg.StatsDataPath)
 	if err != nil {
 		glog.Error(err.Error())
@@ -65,18 +91,17 @@ func doParseData(cfg *AgentConfig) {
 	}
 	glog.Info(string(b))
 
-	events, err := parser.EventsParse(cfg.EventsDataPath)
+	r := proxy.NewReqHttp(cfg.ReportServer + cfg.StatsDataService, "POST", 5)
+	r.SetHeader("Content-Type", "application/json")
+	r.SetHeader("X-App-License-Key", "000000")
+
+	err = r.DoPostData(b)
 	if err != nil {
 		glog.Error(err.Error())
 		return
 	}
 
-	b, err = json.Marshal(events)
-	if err != nil {
-		glog.Error(err.Error())
-		return
-	}
-	glog.Info(string(b))
+
 }
 
 
@@ -98,7 +123,12 @@ func doParseData(cfg *AgentConfig) {
 		case <-timer.C:
 			
 			go func() {
-				doParseData(cfg)
+				doParseStatsData(cfg)
+
+			}()
+
+			go func() {
+				doParseEventsData(cfg)
 			}()
 		case <-ttl:
 			break

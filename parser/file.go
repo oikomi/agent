@@ -9,8 +9,6 @@ package parser
 
 import (
  	"os"
- 	"bufio"
- 	"fmt"
  	"io/ioutil"
  	"../glog"
 )
@@ -36,13 +34,23 @@ func (f *DataFile) isFileExist() bool {
 	return true
 }
 
-func cat(scanner *bufio.Scanner) error {
-    for scanner.Scan() {
-        fmt.Println(scanner.Text()) 
-    
-    }
-    return scanner.Err()
+func (f *DataFile) rmFile() error {
+	err := os.Remove(f.filePath)
+    if err != nil {
+    	glog.Error(err.Error())
+		return err
+    } 
+
+    return nil
 }
+
+// func cat(scanner *bufio.Scanner) error {
+//     for scanner.Scan() {
+//         fmt.Println(scanner.Text()) 
+    
+//     }
+//     return scanner.Err()
+// }
 
 func (f *DataFile) GetAllContent() error {
 	var err error
