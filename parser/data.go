@@ -10,12 +10,14 @@ package parser
 
 import (
  	"sort"
+ 	"time"
  	"strings"
  	"strconv"
  	"../glog"
 )
 
 type StatsSummary struct {
+	StartReportTime     int64
 	AverageRespTime     float64
 	TotalReqCount       int
 	Top5Slow            []*Stats
@@ -79,6 +81,8 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 	var averageRespTime float64
 	statsList := make([]*Stats, 0)
 
+	startReportTime := time.Now().Unix()
+
 	var totalRespTime float64
 	df := NewDataFile(path)
 
@@ -135,11 +139,13 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 
 	if len(statsList) <= 5 {
 		statsSummary = NewStatsSummary()
+		statsSummary.StartReportTime = startReportTime
 		statsSummary.AverageRespTime = averageRespTime
 		statsSummary.TotalReqCount = totalReqCount
 		statsSummary.Top5Slow = statsList
 	} else {
 		statsSummary = NewStatsSummary()
+		statsSummary.StartReportTime = startReportTime
 		statsSummary.AverageRespTime = averageRespTime
 		statsSummary.TotalReqCount = totalReqCount
 		for i:=0; i<5; i++ {
@@ -150,15 +156,28 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 	return statsSummary, err
 }
 
-func EventsParse(path string) ([]*Events, error) {
+func EventsParse(path string) (*EventsSummary, error) {
 	e := NewEvents()
-	eventsList, err := e.parse(path)
+	eventsSummary, err := e.parse(path)
 	if err != nil {
 		glog.Error(err.Error())
 		return nil, err
 	}
 
-	return eventsList, nil
+	return eventsSummary, nil
+}
+
+
+type EventsSummary struct {
+	StartReportTime     int64
+	EventsList          []*Events
+}
+
+
+func NewEventsSummary() *EventsSummary {
+	return &EventsSummary {
+		EventsList : make([]*Events, 0),
+	}
 }
 
 type Events struct {
@@ -188,7 +207,11 @@ func (e *Events) buildEvents(data []string) *Events{
 }
 
 
-func (e *Events) parse(path string) ([]*Events, error){
+func (e *Events) parse(path string) (*EventsSummary, error){
+	var eventsSummary *EventsSummary
+
+	startReportTime := time.Now().Unix()
+
 	eventsList := make([]*Events, 0)
 	df := NewDataFile(path)
 	err := df.GetAllContent()
@@ -212,5 +235,10 @@ func (e *Events) parse(path string) ([]*Events, error){
 
 	}
 
-	return eventsList ,nil
+	eventsSummary = NewEventsSummary()
+
+	eventsSummary.StartReportTime = startReportTime
+	eventsSummary.EventsList = eventsList
+
+	return eventsSummary ,nil
 }
