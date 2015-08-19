@@ -1,5 +1,6 @@
 {
-	"ReportServer"       : "http://report.uaq.baidu.com",
+	"Protocol"           : "file|",
+	"ReportServer"       : "http://sdkbackend-test.jpaas-off00.baidu.com",
 	"LogFile"            : "agent.log",
 
 	"StatsDataPath"      : "/tmp/apm_file_record_stats",
@@ -8,6 +9,6 @@
 	"EventsDataPath"     : "/tmp/apm_file_record_events",
 	"EventsDataService"  : "/server/php/exception",
 
-	"ParseDataInterval"  : 30,
+	"ParseDataInterval"  : 10,
 	"ParseDataExpire"    : 60
 }

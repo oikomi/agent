@@ -16,6 +16,7 @@ import (
 
 type AgentConfig struct {
 	configFile         string
+	Protocol           string
 	ReportServer       string
 	LogFile            string
 

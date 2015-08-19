@@ -8,9 +8,12 @@
  package main
 
 import (
+ 	"os"
  	"fmt"
+ 	"net"
  	"flag"
  	"time"
+ 	"strings"
  	"encoding/json"
 	"./glog"
 	"./parser"
@@ -67,7 +70,7 @@ func doParseEventsData(cfg *AgentConfig) {
 
 	r := proxy.NewReqHttp(cfg.ReportServer + cfg.EventsDataService, "POST", 5)
 	r.SetHeader("Content-Type", "application/json")
-	r.SetHeader("X-App-License-Key", "000000")
+	r.SetHeader("X-App-License-Key", "e3550f68961d4bb3b14b777f347e7c15")
 	//glog.Info(string(b))
 	
 
@@ -96,7 +99,7 @@ func doParseStatsData(cfg *AgentConfig) {
 
 	r := proxy.NewReqHttp(cfg.ReportServer + cfg.StatsDataService, "POST", 5)
 	r.SetHeader("Content-Type", "application/json")
-	r.SetHeader("X-App-License-Key", "000000")
+	r.SetHeader("X-App-License-Key", "e3550f68961d4bb3b14b777f347e7c15")
 
 	err = r.DoPostData(b)
 	if err != nil {
@@ -107,18 +110,7 @@ func doParseStatsData(cfg *AgentConfig) {
 	return
 }
 
-
- func main() {
-	version()
-	fmt.Printf("built on %s\n", BuildTime())
-	flag.Parse()
-	cfg := NewAgentConfig(*InputConfFile)
-	err := cfg.LoadConfig()
-	if err != nil {
-		glog.Error(err.Error())
-		return
-	}
-
+func doFileProc(cfg *AgentConfig) {
 	timer := time.NewTicker(cfg.ParseDataInterval * time.Second)
 	ttl := time.After(cfg.ParseDataExpire * time.Second)
 	for {
@@ -130,6 +122,67 @@ func doParseStatsData(cfg *AgentConfig) {
 			break
 		}
 	}
+}
+
+
+func doUnixProc(cfg *AgentConfig, addr string) {
+	l, err := net.ListenUnix("unix",  &net.UnixAddr{addr, "unix"})
+	if err != nil {
+	    panic(err)
+	}
+	defer os.Remove(addr)
+
+	for {
+	    conn, err := l.AcceptUnix()
+	    if err != nil {
+	        panic(err)
+	    }
+	    var buf [1024]byte
+	    _, err = conn.Read(buf[:])
+	    if err != nil {
+	        panic(err)
+	    }
+	    //fmt.Printf("%s\n", string(buf[:n]));
+	    conn.Close()
+	}
+}
+
+func parseProtocol(cfg *AgentConfig) {
+	l := strings.Split(cfg.Protocol, "|")
+
+	switch l[0] {
+	case "unix":
+		doUnixProc(cfg, l[1])
+	case "file":
+		doFileProc(cfg)
+
+	}
+}
+
+func main() {
+	version()
+	fmt.Printf("built on %s\n", BuildTime())
+	flag.Parse()
+	cfg := NewAgentConfig(*InputConfFile)
+	err := cfg.LoadConfig()
+	if err != nil {
+		glog.Error(err.Error())
+		return
+	}
+
+	parseProtocol(cfg)
+
+	// timer := time.NewTicker(cfg.ParseDataInterval * time.Second)
+	// ttl := time.After(cfg.ParseDataExpire * time.Second)
+	// for {
+	// 	select {
+	// 	case <-timer.C:	
+	// 		go doParseStatsData(cfg)
+	// 		go doParseEventsData(cfg)
+	// 	case <-ttl:
+	// 		break
+	// 	}
+	// }
 
 	glog.Flush()
 }

@@ -92,6 +92,8 @@ func (r *ReqHttp) DoPostData(body []byte) error {
 		glog.Error(err.Error())
 		return err
 	}
+
+	glog.Info(response.StatusCode)
 	
 	if response.StatusCode == 200 {
    //      body, err := ioutil.ReadAll(response.Body)
