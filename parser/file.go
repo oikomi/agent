@@ -60,13 +60,25 @@ func (f *DataFile) GetAllContent() error {
 		return FILE_NOT_EXIST
 	}
 
-    fd, err := os.Open(f.filePath)
-    if err != nil{		
+	f.content, err = ioutil.ReadFile(f.filePath)
+    if err != nil {
     	glog.Error(err.Error())
 		return err
-	}  
-    defer fd.Close()  
-    f.content, err = ioutil.ReadAll(fd)  
+    } 
+
+ //    fd, err := os.Open(f.filePath)
+ //    defer fd.Close()  
+
+ //    if err != nil {		
+ //    	glog.Error(err.Error())
+	// 	return err
+	// }  
+    
+ //    f.content, err = ioutil.ReadAll(fd)  
+	// if err != nil {		
+ //    	glog.Error(err.Error())
+	// 	return err
+	// }   
 
     return err
 }

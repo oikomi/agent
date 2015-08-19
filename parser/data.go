@@ -52,7 +52,7 @@ type Stats struct {
 	Duration  string
 }
 
-func NewStats() *Stats{
+func NewStats() *Stats {
 	return &Stats {
 
 	}

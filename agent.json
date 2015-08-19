@@ -8,6 +8,6 @@
 	"EventsDataPath"     : "/tmp/apm_file_record_events",
 	"EventsDataService"  : "/server/php/exception",
 
-	"ParseDataInterval"  : 20,
-	"ParseDataExpire"    : 50
+	"ParseDataInterval"  : 30,
+	"ParseDataExpire"    : 60
 }

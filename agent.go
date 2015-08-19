@@ -68,13 +68,16 @@ func doParseEventsData(cfg *AgentConfig) {
 	r := proxy.NewReqHttp(cfg.ReportServer + cfg.EventsDataService, "POST", 5)
 	r.SetHeader("Content-Type", "application/json")
 	r.SetHeader("X-App-License-Key", "000000")
-	glog.Info(string(b))
+	//glog.Info(string(b))
+	
 
 	err = r.DoPostData(b)
 	if err != nil {
 		glog.Error(err.Error())
 		return
 	}
+
+	return
 }
 
 func doParseStatsData(cfg *AgentConfig) {
@@ -89,7 +92,7 @@ func doParseStatsData(cfg *AgentConfig) {
 		glog.Error(err.Error())
 		return
 	}
-	glog.Info(string(b))
+	//glog.Info(string(b))
 
 	r := proxy.NewReqHttp(cfg.ReportServer + cfg.StatsDataService, "POST", 5)
 	r.SetHeader("Content-Type", "application/json")
@@ -101,7 +104,7 @@ func doParseStatsData(cfg *AgentConfig) {
 		return
 	}
 
-
+	return
 }
 
 
@@ -120,16 +123,9 @@ func doParseStatsData(cfg *AgentConfig) {
 	ttl := time.After(cfg.ParseDataExpire * time.Second)
 	for {
 		select {
-		case <-timer.C:
-			
-			go func() {
-				doParseStatsData(cfg)
-
-			}()
-
-			go func() {
-				doParseEventsData(cfg)
-			}()
+		case <-timer.C:	
+			go doParseStatsData(cfg)
+			go doParseEventsData(cfg)
 		case <-ttl:
 			break
 		}
