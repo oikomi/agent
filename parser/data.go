@@ -131,8 +131,6 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 				return nil, err
 			}
 			totalRespTime += tmpRespTime
-
-
 			
 			tmpUserCpuUsage , err := strconv.ParseFloat(strings.TrimSpace(lineList[7]), 32)
 			if err != nil {
@@ -156,7 +154,6 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 			}
 
 			totalMemPeakUsage += tmpMemPeakUsage
-
 		}
 	}
 
@@ -168,7 +165,7 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 		}
         tmp2 , err := strconv.ParseFloat(p.Duration, 64)
 		if err != nil {
-			glog.Error(err.Error())		
+			glog.Error(err.Error())
 		}
 
         return tmp1 < tmp2
@@ -239,7 +236,7 @@ func NewEvents() *Events {
 	}
 }
 
-func (e *Events) buildEvents(data []string) *Events{
+func (e *Events) buildEvents(data []string) *Events {
 	if len(data) == 4 {
 		return &Events {
 			Time   : strings.TrimSpace(data[0]),
