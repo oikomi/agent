@@ -3,10 +3,10 @@
 	"ReportServer"       : "http://sdkbackend-test.jpaas-off00.baidu.com",
 	"LogFile"            : "agent.log",
 
-	"StatsDataPath"      : "/tmp/apm_file_record_stats",
+	"StatsDataPath"      : "/tmp/.apm_file_record_stats",
 	"StatsDataService"   : "/server/php/performance",
 
-	"EventsDataPath"     : "/tmp/apm_file_record_events",
+	"EventsDataPath"     : "/tmp/.apm_file_record_events",
 	"EventsDataService"  : "/server/php/exception",
 
 	"ParseDataInterval"  : 10,
