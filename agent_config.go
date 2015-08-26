@@ -15,19 +15,22 @@ import (
 )
 
 type AgentConfig struct {
-	configFile         string
-	Protocol           string
-	ReportServer       string
-	LogFile            string
+	configFile            string
+	Protocol              string
+	ReportServer          string
+	LogFile               string
 
-	StatsDataPath      string
-	StatsDataService   string
+	StatsDataPath         string
+	StatsDataService      string
 
-	EventsDataPath     string
-	EventsDataService  string
+	EventsDataPath        string
+	EventsDataService     string
 
-	ParseDataInterval  time.Duration
-	ParseDataExpire    time.Duration
+	WebTraceDataPath      string
+	WebTracesDataService  string
+
+	ParseDataInterval     time.Duration
+	ParseDataExpire       time.Duration
 }
 
 func NewAgentConfig(configFile string) *AgentConfig {

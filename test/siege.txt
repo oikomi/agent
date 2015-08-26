@@ -1,6 +1,6 @@
-http://192.168.22.128/hello.php
+http://192.168.22.128/hello.php?a=b
 
-http://192.168.22.128/hello.php
+http://192.168.22.128/hello.php?c=d&u=9
 http://192.168.22.128/hello.php
 http://192.168.22.128/hello.php
 http://192.168.22.128/hello.php

@@ -8,9 +8,7 @@
  package main
 
 import (
- 	"os"
  	"fmt"
- 	"net"
  	"flag"
  	"time"
  	"strings"
@@ -18,6 +16,7 @@ import (
 	"./glog"
 	"./parser"
 	"./proxy"
+	"./protocol"
 )
 
 
@@ -125,34 +124,45 @@ func doFileProc(cfg *AgentConfig) {
 }
 
 
-func doUnixProc(cfg *AgentConfig, addr string) {
-	l, err := net.ListenUnix("unix",  &net.UnixAddr{addr, "unix"})
-	if err != nil {
-	    panic(err)
-	}
-	defer os.Remove(addr)
+// func doUnixProc(cfg *AgentConfig, addr string) {
+// 	_, err := os.Stat(addr)
+// 	if err != nil && os.IsNotExist(err) {
+		
+// 	} else {
+// 		err := os.Remove(addr)
+// 	    if err != nil {
+// 	    	glog.Error(err.Error())
+// 			return
+// 	    } 
+// 	}
 
-	for {
-	    conn, err := l.AcceptUnix()
-	    if err != nil {
-	        panic(err)
-	    }
-	    var buf [1024]byte
-	    _, err = conn.Read(buf[:])
-	    if err != nil {
-	        panic(err)
-	    }
-	    //fmt.Printf("%s\n", string(buf[:n]));
-	    conn.Close()
-	}
-}
+// 	l, err := net.ListenUnix("unix",  &net.UnixAddr{addr, "unix"})
+// 	if err != nil {
+// 	    panic(err)
+// 	}
+// 	defer os.Remove(addr)
+
+// 	for {
+// 	    conn, err := l.AcceptUnix()
+// 	    if err != nil {
+// 	        panic(err)
+// 	    }
+// 	    var buf [1024]byte
+// 	    n, err := conn.Read(buf[:])
+// 	    if err != nil {
+// 	        panic(err)
+// 	    }
+// 	    fmt.Printf("%s\n", string(buf[:n]));
+// 	    conn.Close()
+// 	}
+// }
 
 func parseProtocol(cfg *AgentConfig) {
 	l := strings.Split(cfg.Protocol, "|")
 
 	switch l[0] {
 	case "unix":
-		doUnixProc(cfg, l[1])
+		protocol.DoUnixProc(l[1])
 	case "file":
 		doFileProc(cfg)
 
@@ -171,18 +181,6 @@ func main() {
 	}
 
 	parseProtocol(cfg)
-
-	// timer := time.NewTicker(cfg.ParseDataInterval * time.Second)
-	// ttl := time.After(cfg.ParseDataExpire * time.Second)
-	// for {
-	// 	select {
-	// 	case <-timer.C:	
-	// 		go doParseStatsData(cfg)
-	// 		go doParseEventsData(cfg)
-	// 	case <-ttl:
-	// 		break
-	// 	}
-	// }
 
 	glog.Flush()
 }
