@@ -16,6 +16,10 @@ type WebError struct {
 	Trace    string  `json:"trace"` 
 }
 
+type WebTrace struct {
+	WebTraceDetail   string  `json:"web_trace_detail"`
+}
+
 type UnixRawData struct {
 	ApplicationId    string  `json:"application_id"` 
 	ResponseCode     string  `json:"response_code"` 
@@ -32,4 +36,5 @@ type UnixRawData struct {
 	SysCpu           int64   `json:"sys_cpu"` 
 
 	Errors           []WebError `json:"errors"` 
+	WebTrace         WebTrace  `json:"web_trace"` 
 }

@@ -27,6 +27,8 @@ type Stat struct {
 	UserCpuUsage      int64
 	SysCpuUsage       int64
 	MemPeakUsage      int64
+
+	WebTrace          string
 }
 
 func NewStat() *Stat {
@@ -36,6 +38,7 @@ func NewStat() *Stat {
 }
 
 func BuildStat(js *simplejson.Json) (*Stat, error) {
+	var webTrace []byte
 	tmpTime, err := js.Get("ts").Int64()
 	if err != nil {
 		glog.Error(err.Error())
@@ -87,6 +90,16 @@ func BuildStat(js *simplejson.Json) (*Stat, error) {
 		return nil, err
 	}
 
+
+	tmpWebTrace := js.Get("web_trace")
+	if tmpWebTrace != nil {
+		webTrace, err = tmpWebTrace.Get("web_trace_detail").Encode()
+		if err != nil {
+			glog.Error(err.Error())
+			return nil, err
+		}
+	}
+
 	s := &Stat {
 		Time            : tmpTime,      
 		Script          : tmpScript,  
@@ -97,7 +110,8 @@ func BuildStat(js *simplejson.Json) (*Stat, error) {
 		Duration        : tmpDuration,  
 		UserCpuUsage    : tmpUserCpuUsage,   
 		SysCpuUsage     : tmpSysCpuUsage,    
-		MemPeakUsage    : tmpMemPeakUsage,   	
+		MemPeakUsage    : tmpMemPeakUsage,
+		WebTrace        : string(webTrace),	
 	}
 
 	return s, nil

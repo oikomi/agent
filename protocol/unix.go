@@ -85,7 +85,7 @@ func ReportStatData() {
 		glog.Error(err.Error())
 		return
 	}
-	//fmt.Println(string(b))
+	fmt.Println(string(b))
 	greportStatData  = NewStatsSummary()
 	initData()
 
@@ -120,7 +120,7 @@ func ReportEventData() {
 }
 
 func (u *UnixProto) contentParse(data []byte) error {
-	fmt.Println(string(data))
+	//fmt.Println(string(data))
 	js, err := simplejson.NewJson(data)
 	if err != nil {
 		glog.Error(err.Error())
@@ -196,6 +196,21 @@ func (u *UnixProto) contentParse(data []byte) error {
 
 		greportEventData.EventList = append(greportEventData.EventList, el...)
 	}
+
+	// tmpWebTrace := js.Get("web_trace")
+	// if tmpWebTrace != nil {
+	// 	webTrace, err := tmpWebTrace.Get("web_trace_detail").String()
+	// 	if err != nil {
+	// 		glog.Error(err.Error())
+	// 		return err
+	// 	}
+	// }
+	//.Get("web_trace_detail").String()
+	// if err == nil {
+	// 	glog.Error(err.Error())
+	// 	return err
+	// }
+
 
 	//fmt.Println(greportEventData.EventList)
 
