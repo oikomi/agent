@@ -85,7 +85,7 @@ func ReportStatData() {
 		glog.Error(err.Error())
 		return
 	}
-	fmt.Println(string(b))
+	//fmt.Println(string(b))
 	greportStatData  = NewStatsSummary()
 	initData()
 
@@ -108,7 +108,7 @@ func ReportEventData() {
 		return
 	}
 
-	fmt.Println(string(b))
+	//fmt.Println(string(b))
 
 	greportEventData = NewEventSummary()
 
@@ -120,7 +120,7 @@ func ReportEventData() {
 }
 
 func (u *UnixProto) contentParse(data []byte) error {
-	//fmt.Println(string(data))
+	fmt.Println(string(data))
 	js, err := simplejson.NewJson(data)
 	if err != nil {
 		glog.Error(err.Error())
@@ -232,8 +232,8 @@ func (u *UnixProto) run() {
 		for {
 			select {
 			case <-timer.C:	
-				ReportStatData()
-				ReportEventData()
+				go ReportStatData()
+				go ReportEventData()
 			case <-ttl:
 				break
 			}
@@ -246,7 +246,7 @@ func (u *UnixProto) run() {
 	        panic(err)
 	    }
 	    //var buf [8*1024]byte
-	    buf := make([]byte, 8*1024)
+	    buf := make([]byte, 64*1024)
 	    _, err = u.conn.Read(buf[:])
 	    if err != nil {
 	        panic(err)

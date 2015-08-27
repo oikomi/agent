@@ -7,10 +7,9 @@ http://192.168.22.128/hello.php
 
 
 
+http://192.168.22.128/hello2.php
+http://192.168.22.128/hello2.php
 http://192.168.22.128/hello.php
 http://192.168.22.128/hello.php
-http://192.168.22.128/hello.php
-http://192.168.22.128/hello.php
-http://192.168.22.128/hello.php
-http://192.168.22.128/run-tests.php
-
+http://192.168.22.128/hello2.php
+#http://192.168.22.128/run-tests.php
