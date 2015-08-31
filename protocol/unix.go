@@ -20,6 +20,7 @@ import (
  	"github.com/bitly/go-simplejson"
 	"../glog"
 	"../proxy"
+	"../module"
 )
 
 
@@ -75,9 +76,18 @@ func ReportStatData() {
 	r := proxy.NewReqHttp("http://sdkbackend-test.jpaas-off00.baidu.com" + "/server/php/performance", "POST", 5)
 	r.SetHeader("Content-Type", "application/json")
 	r.SetHeader("X-App-License-Key", "e3550f68961d4bb3b14b777f347e7c15")
+
+	tmpHostName, err := os.Hostname()
+	if err != nil {
+		glog.Error(err.Error())
+		return 
+	}	
+
+	greportStatData.InstanceId = tmpHostName
+
 	// glog.Info(string(b))
 	greportStatData.StartReportTime = time.Now().Unix()
-	greportStatData.AverageRespTime = greportStatData.AverageRespTime / 1000.0
+	greportStatData.AverageRespTime = greportStatData.AverageRespTime / (1000.0 * 1000.0 * 1000.0)
 	greportStatData.CpuUsePercentage = (float64)(gtotalCpuUsage) / (10.0 * 1000 * 1000)
 
 	b, err := json.Marshal(greportStatData)
@@ -167,6 +177,19 @@ func (u *UnixProto) contentParse(data []byte) error {
 		return err
 	}
 
+
+	//add for db
+	if len(s.WebTrace) != 0 {
+		mysqlMonitor := module.NewMysqlMonitor(s.WebTrace)
+		mysqlMonitor.Parse()
+
+		memcacheMonitor := module.NewMemcacheMonitor(s.WebTrace)
+		memcacheMonitor.Parse()
+
+	}
+
+	//
+
 	if len(greportStatData.Top5Slow) == 5 {
 		sort.Sort(StatsWrapper{greportStatData.Top5Slow, func (p, q *Stat) bool {
 
@@ -197,22 +220,8 @@ func (u *UnixProto) contentParse(data []byte) error {
 		greportEventData.EventList = append(greportEventData.EventList, el...)
 	}
 
-	// tmpWebTrace := js.Get("web_trace")
-	// if tmpWebTrace != nil {
-	// 	webTrace, err := tmpWebTrace.Get("web_trace_detail").String()
-	// 	if err != nil {
-	// 		glog.Error(err.Error())
-	// 		return err
-	// 	}
-	// }
-	//.Get("web_trace_detail").String()
-	// if err == nil {
-	// 	glog.Error(err.Error())
-	// 	return err
-	// }
 
 
-	//fmt.Println(greportEventData.EventList)
 
 	return err
 }

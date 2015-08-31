@@ -30,7 +30,7 @@ type UnixRawData struct {
 	Status           string  `json:"status"` 
 	Ip               string  `json:"ip"` 
 	Method           string  `json:"method"` 
-	Duration         int64   `json:"duration"` 
+	Duration         float64 `json:"duration"` 
 	MemPeakUsage     string  `json:"mem_peak_usage"` 
 	UserCpu          int64   `json:"user_cpu"` 
 	SysCpu           int64   `json:"sys_cpu"` 

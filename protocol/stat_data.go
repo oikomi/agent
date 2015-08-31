@@ -23,7 +23,7 @@ type Stat struct {
 	Client            string
 	Method            string
 	Status            string
-	Duration          int64
+	Duration          float64
 	UserCpuUsage      int64
 	SysCpuUsage       int64
 	MemPeakUsage      int64
@@ -38,7 +38,8 @@ func NewStat() *Stat {
 }
 
 func BuildStat(js *simplejson.Json) (*Stat, error) {
-	var webTrace []byte
+	var webTrace string
+
 	tmpTime, err := js.Get("ts").Int64()
 	if err != nil {
 		glog.Error(err.Error())
@@ -46,6 +47,12 @@ func BuildStat(js *simplejson.Json) (*Stat, error) {
 	}
 
 	tmpScript, err := js.Get("uri").String()
+	if err != nil {
+		glog.Error(err.Error())
+		return nil, err
+	}
+
+	tmpMethod, err := js.Get("method").String()
 	if err != nil {
 		glog.Error(err.Error())
 		return nil, err
@@ -68,7 +75,7 @@ func BuildStat(js *simplejson.Json) (*Stat, error) {
 		return nil, err
 	}
 
-	tmpDuration, err := js.Get("duration").Int64()
+	tmpDuration, err := js.Get("duration").Float64()
 	if err != nil {
 		glog.Error(err.Error())
 		return nil, err
@@ -93,7 +100,7 @@ func BuildStat(js *simplejson.Json) (*Stat, error) {
 
 	tmpWebTrace := js.Get("web_trace")
 	if tmpWebTrace != nil {
-		webTrace, err = tmpWebTrace.Get("web_trace_detail").Encode()
+		webTrace,err = tmpWebTrace.Get("web_trace_detail").String()
 		if err != nil {
 			glog.Error(err.Error())
 			return nil, err
@@ -105,9 +112,9 @@ func BuildStat(js *simplejson.Json) (*Stat, error) {
 		Script          : tmpScript,  
 		Host            : tmpHost,
 		Client          : tmpClient,  
-		Method          : "GET",         
+		Method          : tmpMethod,         
 		Status          : tmpStatus,       
-		Duration        : tmpDuration,  
+		Duration        : tmpDuration / (1000.0 * 1000.0),  
 		UserCpuUsage    : tmpUserCpuUsage,   
 		SysCpuUsage     : tmpSysCpuUsage,    
 		MemPeakUsage    : tmpMemPeakUsage,
@@ -118,6 +125,7 @@ func BuildStat(js *simplejson.Json) (*Stat, error) {
 }
 
 type StatSummary struct {
+	InstanceId          string
 	StartReportTime     int64
 	AverageRespTime     float64
 	TotalReqCount       int64
