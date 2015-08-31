@@ -42,7 +42,7 @@ var	greportStatData   *StatSummary
 var	greportEventData  *EventSummary
 var gtotalRespTime    int64
 var gtotalCpuUsage    int64
-var gtotalMemUsage    int64
+//var gtotalMemUsage    int64
 
 func init() {
 	greportStatData  = NewStatsSummary()
@@ -98,6 +98,8 @@ func ReportStatData() {
 	fmt.Println(string(b))
 	greportStatData  = NewStatsSummary()
 	initData()
+
+	module.MysqlInitData()
 
 
 	err = r.DoPostData(b)
@@ -180,8 +182,12 @@ func (u *UnixProto) contentParse(data []byte) error {
 
 	//add for db
 	if len(s.WebTrace) != 0 {
-		mysqlMonitor := module.NewMysqlMonitor(s.WebTrace)
-		mysqlMonitor.Parse()
+		mysqlMonitor := module.NewMysqlMonitor()
+		greportStatData.MysqlData, err = mysqlMonitor.Parse(js)
+		if err != nil {
+			glog.Error(err.Error())
+			return err
+		}
 
 		memcacheMonitor := module.NewMemcacheMonitor(s.WebTrace)
 		memcacheMonitor.Parse()
@@ -219,9 +225,6 @@ func (u *UnixProto) contentParse(data []byte) error {
 
 		greportEventData.EventList = append(greportEventData.EventList, el...)
 	}
-
-
-
 
 	return err
 }

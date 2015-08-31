@@ -10,45 +10,73 @@ package module
 
 import (
 	//"fmt"
+ 	//"time"
 	"strconv"
 	"strings"
 
 	"../glog"
+
+	"github.com/bitly/go-simplejson"
 )
 
+var	gMysqlreportData   *MysqlData
+var	gMysqlTotalResTime   float64
 
 var mysqlMonitorFuncs []string
 
 func init() {
-	mysqlMonitorFuncs = []string{"mysql_db_query"}
+	mysqlMonitorFuncs = []string{"mysql_db_query("}
+	gMysqlreportData = NewMysqlData()
 }
 
 type MysqlMonitor struct {
-	rawData          string
-	funcDuration     []map[string]float64
+	mysqlData     *MysqlData
 }
 
 
-func NewMysqlMonitor(rawData string) *MysqlMonitor {
+func NewMysqlMonitor() *MysqlMonitor {
 	return &MysqlMonitor {
-		rawData      : rawData,
-		funcDuration : make([]map[string]float64, 0),
+		mysqlData    : NewMysqlData(),
 	}
 }
 
-func (m *MysqlMonitor) Parse() error {
-	//fmt.Println(m.rawData)
+func MysqlInitData() {
+	gMysqlTotalResTime = 0
+	gMysqlreportData = NewMysqlData()
+}
 
-	rawDataList := strings.Split(m.rawData, "+")
-	//fmt.Println(len(rawDataList))
+func (m *MysqlMonitor) Parse(js *simplejson.Json) (*MysqlData, error) {
+	var err error
+	var webTrace string
+	tmpWebTrace := js.Get("web_trace")
+	if tmpWebTrace != nil {
+		webTrace,err = tmpWebTrace.Get("web_trace_detail").String()
+		if err != nil {
+			glog.Error(err.Error())
+			return nil, err
+		}
+	}
+
+	tmpTime, err := js.Get("ts").Int64()
+	if err != nil {
+		glog.Error(err.Error())
+		return nil, err
+	}
+
+	tmpScript, err := js.Get("uri").String()
+	if err != nil {
+		glog.Error(err.Error())
+		return nil, err
+	}
+
+
+	rawDataList := strings.Split(webTrace, "+")
 
 	for _, v := range rawDataList {
-		
 		for _, vv := range mysqlMonitorFuncs {
 			if strings.Contains(v, vv) && strings.Contains(v, "wt") {
 				//fmt.Println(v)
 				fd := make(map[string]float64)
-
 
 				indexWt := strings.Index(v, "wt")
 				indexTotal := strings.Index(v, "total")
@@ -56,18 +84,43 @@ func (m *MysqlMonitor) Parse() error {
 				tmpTotal, err := strconv.ParseFloat(strings.TrimSpace(strings.Split(v[indexTotal:], ":")[1]), 64)
 				if err != nil {
 					glog.Error(err.Error())
-					return err
+					return nil, err
 				}
 
 				fd[v[:indexWt]] = tmpTotal
-				//fmt.Println(m)
 
-				m.funcDuration = append(m.funcDuration, fd)
-				//fmt.Println(m.funcDuration)
+				gMysqlTotalResTime += tmpTotal
+
+				gMysqlreportData.TotalReqCount ++ 
+
+				gMysqlreportData.AverageRespTime = gMysqlTotalResTime / (float64)(gMysqlreportData.TotalReqCount)
+
+				mysqlSlowData := NewMysqlSlowData()
+				mysqlSlowData.SqlDuration = fd
+				mysqlSlowData.Time = tmpTime
+				mysqlSlowData.Script = tmpScript
+
+
+				if len(gMysqlreportData.Top5Slow) < 5 {
+					gMysqlreportData.Top5Slow = append(gMysqlreportData.Top5Slow, mysqlSlowData)
+				} else {
+					for i, val := range gMysqlreportData.Top5Slow {
+						for _, mapVal := range val.SqlDuration {
+							if mapVal < tmpTotal {
+								gMysqlreportData.Top5Slow[i] = mysqlSlowData
+								break
+							}					
+						}
+
+					}
+				}
+
 			}
 		}
 	}
 
-	return nil
+	//fmt.Println(gMysqlreportData)
+
+	return gMysqlreportData, nil
 
 }

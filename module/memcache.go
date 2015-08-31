@@ -40,14 +40,12 @@ func (m *MemcacheMonitor) Parse() error {
 	//fmt.Println(m.rawData)
 
 	rawDataList := strings.Split(m.rawData, "+")
-	//fmt.Println(len(rawDataList))
 
 	for _, v := range rawDataList {
 		
 		for _, vv := range memcacheMonitorFuncs {
 			if strings.Contains(v, vv) && strings.Contains(v, "wt") {
 				fd := make(map[string]float64)
-
 
 				indexWt := strings.Index(v, "wt")
 				indexTotal := strings.Index(v, "total")
@@ -68,5 +66,4 @@ func (m *MemcacheMonitor) Parse() error {
 	}
 
 	return nil
-
 }

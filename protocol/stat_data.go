@@ -10,7 +10,7 @@ package protocol
 
 import (
 	"github.com/bitly/go-simplejson"
-
+	"../module"
 	"../glog"
 )
 
@@ -134,10 +134,12 @@ type StatSummary struct {
 	TotalMemUsage       int64
 
 	Top5Slow            []*Stat
+	MysqlData           *module.MysqlData
 }
 
 func NewStatsSummary() *StatSummary {
 	return &StatSummary {
-		Top5Slow : make([]*Stat, 0),
+		Top5Slow  : make([]*Stat, 0),
+		MysqlData : module.NewMysqlData(),
 	}
 }
