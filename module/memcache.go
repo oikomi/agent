@@ -50,7 +50,7 @@ func (m *MemcacheMonitor) Parse(js *simplejson.Json) (*MemcacheData, error) {
 	var webTrace string
 	tmpWebTrace := js.Get("web_trace")
 	if tmpWebTrace != nil {
-		webTrace,err = tmpWebTrace.Get("web_trace_detail").String()
+		webTrace, err = tmpWebTrace.Get("web_trace_detail").String()
 		if err != nil {
 			glog.Error(err.Error())
 			return nil, err
