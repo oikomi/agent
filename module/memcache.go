@@ -9,37 +9,68 @@
 package module
 
 import (
-	"fmt"
+	//"fmt"
 	"strconv"
 	"strings"
 
 	"../glog"
+
+	"github.com/bitly/go-simplejson"
 )
 
+var	gMemcacheReportData     *MemcacheData
+var	gMemcacheTotalResTime   float64
 
 var memcacheMonitorFuncs []string
 
 func init() {
 	memcacheMonitorFuncs = []string{"Memcache->set(", "Memcache->get("}
+	gMemcacheReportData = NewMemcacheData()
+}
+
+
+func MemcacheInitData() {
+	gMemcacheTotalResTime = 0
+	gMemcacheReportData = NewMemcacheData()
 }
 
 
 type MemcacheMonitor struct {
-	rawData          string
 	funcDuration     []map[string]float64
 }
 
-func NewMemcacheMonitor(rawData string) *MemcacheMonitor {
+func NewMemcacheMonitor() *MemcacheMonitor {
 	return &MemcacheMonitor {
-		rawData      : rawData,
 		funcDuration : make([]map[string]float64, 0),
 	}
 }
 
-func (m *MemcacheMonitor) Parse() error {
-	//fmt.Println(m.rawData)
+func (m *MemcacheMonitor) Parse(js *simplejson.Json) (*MemcacheData, error) {
+	var err error
+	var webTrace string
+	tmpWebTrace := js.Get("web_trace")
+	if tmpWebTrace != nil {
+		webTrace,err = tmpWebTrace.Get("web_trace_detail").String()
+		if err != nil {
+			glog.Error(err.Error())
+			return nil, err
+		}
+	}
 
-	rawDataList := strings.Split(m.rawData, "+")
+	tmpTime, err := js.Get("ts").Int64()
+	if err != nil {
+		glog.Error(err.Error())
+		return nil, err
+	}
+
+	tmpScript, err := js.Get("uri").String()
+	if err != nil {
+		glog.Error(err.Error())
+		return nil, err
+	}
+
+
+	rawDataList := strings.Split(webTrace, "+")
 
 	for _, v := range rawDataList {
 		
@@ -53,17 +84,43 @@ func (m *MemcacheMonitor) Parse() error {
 				tmpTotal, err := strconv.ParseFloat(strings.TrimSpace(strings.Split(v[indexTotal:], ":")[1]), 64)
 				if err != nil {
 					glog.Error(err.Error())
-					return err
+					return nil, err
 				}
 
 				fd[v[:indexWt]] = tmpTotal
-				//fmt.Println(m)
 
-				m.funcDuration = append(m.funcDuration, fd)
-				fmt.Println(m.funcDuration)
+
+				gMemcacheTotalResTime += tmpTotal
+
+				gMemcacheReportData.TotalReqCount ++ 
+
+				gMemcacheReportData.AverageRespTime = gMemcacheTotalResTime / (float64)(gMemcacheReportData.TotalReqCount)
+
+				memcacheSlowData := NewMemcacheSlowData()
+				memcacheSlowData.OpDuration = fd
+				memcacheSlowData.Time = tmpTime
+				memcacheSlowData.Script = tmpScript
+
+
+				if len(gMemcacheReportData.Top5Slow) < 5 {
+					gMemcacheReportData.Top5Slow = append(gMemcacheReportData.Top5Slow, memcacheSlowData)
+				} else {
+					for i, val := range gMemcacheReportData.Top5Slow {
+						for _, mapVal := range val.OpDuration {
+							if mapVal < tmpTotal {
+								gMemcacheReportData.Top5Slow[i] = memcacheSlowData
+								break
+							}					
+						}
+
+					}
+				}
+
 			}
 		}
 	}
 
-	return nil
+	//fmt.Println(gMemcacheReportData)
+
+	return gMemcacheReportData, nil
 }

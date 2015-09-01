@@ -99,8 +99,9 @@ func ReportStatData() {
 	greportStatData  = NewStatsSummary()
 	initData()
 
+	//reset status
 	module.MysqlInitData()
-
+	module.MemcacheInitData()
 
 	err = r.DoPostData(b)
 	if err != nil {
@@ -189,8 +190,12 @@ func (u *UnixProto) contentParse(data []byte) error {
 			return err
 		}
 
-		memcacheMonitor := module.NewMemcacheMonitor(s.WebTrace)
-		memcacheMonitor.Parse()
+		memcacheMonitor := module.NewMemcacheMonitor()
+		greportStatData.MemcacheData, err = memcacheMonitor.Parse(js)
+		if err != nil {
+			glog.Error(err.Error())
+			return err
+		}
 
 	}
 

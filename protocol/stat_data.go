@@ -135,6 +135,7 @@ type StatSummary struct {
 
 	Top5Slow            []*Stat
 	MysqlData           *module.MysqlData
+	MemcacheData        *module.MemcacheData
 }
 
 func NewStatsSummary() *StatSummary {

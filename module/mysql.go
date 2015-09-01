@@ -122,5 +122,4 @@ func (m *MysqlMonitor) Parse(js *simplejson.Json) (*MysqlData, error) {
 	//fmt.Println(gMysqlreportData)
 
 	return gMysqlreportData, nil
-
 }
