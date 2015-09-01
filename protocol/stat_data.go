@@ -136,11 +136,14 @@ type StatSummary struct {
 	Top5Slow            []*Stat
 	MysqlData           *module.MysqlData
 	MemcacheData        *module.MemcacheData
+	ExternalServiceData *module.ExternalServiceData
 }
 
 func NewStatsSummary() *StatSummary {
 	return &StatSummary {
 		Top5Slow  : make([]*Stat, 0),
 		MysqlData : module.NewMysqlData(),
+		MemcacheData : module.NewMemcacheData(),
+		ExternalServiceData : module.NewExternalServiceData(),
 	}
 }
