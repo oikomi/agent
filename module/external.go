@@ -1,5 +1,5 @@
 /*
- * curl.go
+ * external.go
  *
  *  Created on: 01/09/2015
  *      Author: miaohong(miaohong01@baidu.com)
@@ -24,7 +24,7 @@ var	gExternalServiceTotalResTime   float64
 var externalServiceMonitorFuncs []string
 
 func init() {
-	externalServiceMonitorFuncs = []string{"curl_exec("}
+	externalServiceMonitorFuncs = []string{"curl_exec(", "file_get_contents("}
 	gExternalServiceReportData = NewExternalServiceData()
 }
 
