@@ -9,7 +9,7 @@
 package module
 
 import (
-	//"fmt"
+	"fmt"
  	//"time"
 	"strconv"
 	"strings"
@@ -23,16 +23,19 @@ var	gMysqlreportData   *MysqlData
 var	gMysqlTotalResTime   float64
 
 var mysqlMonitorFuncs []string
+// type mysqlOprationDuration map[string]float64
+// var mysqlOprationClassify map[string]mysqlOprationDuration
+
 
 func init() {
-	mysqlMonitorFuncs = []string{"mysql_db_query("}
+	mysqlMonitorFuncs = []string{"mysql_query("}
+
 	gMysqlreportData = NewMysqlData()
 }
 
 type MysqlMonitor struct {
 	mysqlData     *MysqlData
 }
-
 
 func NewMysqlMonitor() *MysqlMonitor {
 	return &MysqlMonitor {
@@ -44,6 +47,24 @@ func MysqlInitData() {
 	gMysqlTotalResTime = 0
 	gMysqlreportData = NewMysqlData()
 }
+
+func (m *MysqlMonitor) sqlParse(s string)  string {
+	//fmt.Println(s)
+	if strings.Contains(s, "mysql_query(") {
+		argsList := strings.Split(strings.TrimLeft(s, "mysql_query("), ",")
+		fmt.Println(argsList[0])
+
+		return argsList[0]
+		// if strings.Contains(strings.ToLower(argsList[0]), "select") {
+		// 	//gMysqlreportData.MysqlOprationClassify["SELECT"] = 
+			
+		// }
+	}
+
+	return ""
+
+}
+
 
 func (m *MysqlMonitor) Parse(js *simplejson.Json) (*MysqlData, error) {
 	var err error
@@ -76,6 +97,9 @@ func (m *MysqlMonitor) Parse(js *simplejson.Json) (*MysqlData, error) {
 		for _, vv := range mysqlMonitorFuncs {
 			if strings.Contains(v, vv) && strings.Contains(v, "wt") {
 				//fmt.Println(v)
+				//parse args
+				sqlStatement := m.sqlParse(v)
+
 				fd := make(map[string]float64)
 
 				indexWt := strings.Index(v, "wt")
@@ -86,8 +110,11 @@ func (m *MysqlMonitor) Parse(js *simplejson.Json) (*MysqlData, error) {
 					glog.Error(err.Error())
 					return nil, err
 				}
-
-				fd[v[:indexWt]] = tmpTotal
+				if sqlStatement != "" {
+					fd[sqlStatement] = tmpTotal
+				} else {
+					fd[v[:indexWt]] = tmpTotal
+				}
 
 				gMysqlTotalResTime += tmpTotal
 
@@ -115,6 +142,10 @@ func (m *MysqlMonitor) Parse(js *simplejson.Json) (*MysqlData, error) {
 					}
 				}
 
+			} 
+			if strings.Contains(v, vv) && ! strings.Contains(v, "wt") {
+				//parse arguments
+				//m.argumentsParse(v)
 			}
 		}
 	}

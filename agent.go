@@ -39,7 +39,7 @@ func BuildTime() string {
 	return buildTime
 }
 
-const VERSION string = "0.0.1"
+const VERSION string = "1.0.0"
 
 func version() {
 	fmt.Printf("php agent version %s \n", VERSION)

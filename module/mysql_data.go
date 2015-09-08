@@ -14,15 +14,22 @@ import (
 	// "../glog"
 )
 
+type mysqlOprationDuration map[string]float64
+
 
 type MysqlData struct {
-	TotalReqCount       int64
-	AverageRespTime     float64
-	Top5Slow            []*MysqlSlowData
+	TotalReqCount         int64
+	AverageRespTime       float64
+
+	MysqlOprationClassify map[string][]mysqlOprationDuration
+
+
+	Top5Slow              []*MysqlSlowData
 }
 
 func NewMysqlData() *MysqlData {
 	return &MysqlData {
+		MysqlOprationClassify : make(map[string][]mysqlOprationDuration, 0),
 		Top5Slow  : make([]*MysqlSlowData, 0),
 	}
 }

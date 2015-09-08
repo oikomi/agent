@@ -183,7 +183,7 @@ func (u *UnixProto) contentParse(data []byte) error {
 	}
 
 
-	//add for db
+	//add for db and external services
 	if len(s.WebTrace) != 0 {
 		mysqlMonitor := module.NewMysqlMonitor()
 		greportStatData.MysqlData, err = mysqlMonitor.Parse(js)
@@ -194,6 +194,13 @@ func (u *UnixProto) contentParse(data []byte) error {
 
 		memcacheMonitor := module.NewMemcacheMonitor()
 		greportStatData.MemcacheData, err = memcacheMonitor.Parse(js)
+		if err != nil {
+			glog.Error(err.Error())
+			return err
+		}
+
+		mongodbMonitor := module.NewMongodbMonitor()
+		greportStatData.MongodbData, err = mongodbMonitor.Parse(js)
 		if err != nil {
 			glog.Error(err.Error())
 			return err
