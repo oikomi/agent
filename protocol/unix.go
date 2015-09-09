@@ -102,6 +102,8 @@ func ReportStatData() {
 	//reset status
 	module.MysqlInitData()
 	module.MemcacheInitData()
+	module.MongodbInitData()
+	module.RedisInitData()
 	module.ExternalServiceInitData()
 
 
@@ -205,6 +207,14 @@ func (u *UnixProto) contentParse(data []byte) error {
 			glog.Error(err.Error())
 			return err
 		}
+
+		redisMonitor := module.NewRedisMonitor()
+		greportStatData.RedisData, err = redisMonitor.Parse(js)
+		if err != nil {
+			glog.Error(err.Error())
+			return err
+		}
+
 
 		externalServiceMonitor := module.NewExternalServiceMonitor()
 		greportStatData.ExternalServiceData, err = externalServiceMonitor.Parse(js)

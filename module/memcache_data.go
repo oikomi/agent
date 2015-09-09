@@ -23,7 +23,7 @@ func NewMemcacheData() *MemcacheData {
 type MemcacheSlowData struct {
 	Time                int64
 	Script              string
-	OpDuration         map[string]float64
+	OpDuration          map[string]float64
 }
 
 func NewMemcacheSlowData() *MemcacheSlowData {

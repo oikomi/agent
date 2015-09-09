@@ -137,6 +137,7 @@ type StatSummary struct {
 	MysqlData           *module.MysqlData
 	MemcacheData        *module.MemcacheData
 	MongodbData         *module.MongodbData
+	RedisData           *module.RedisData
 	ExternalServiceData *module.ExternalServiceData
 }
 
