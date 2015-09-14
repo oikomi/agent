@@ -5,7 +5,6 @@
  *      Author: miaohong(miaohong01@baidu.com)
  */
 
-
 package module
 
 import (
@@ -15,7 +14,6 @@ import (
 )
 
 type mysqlOprationDuration map[string]float64
-
 
 type MysqlData struct {
 	TotalReqCount         int64

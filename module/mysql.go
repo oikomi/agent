@@ -5,7 +5,6 @@
  *      Author: miaohong(miaohong01@baidu.com)
  */
 
-
 package module
 
 import (
@@ -13,7 +12,6 @@ import (
  	//"time"
 	"strconv"
 	"strings"
-
 	"../glog"
 
 	"github.com/bitly/go-simplejson"
@@ -25,7 +23,6 @@ var	gMysqlTotalResTime   float64
 var mysqlMonitorFuncs []string
 // type mysqlOprationDuration map[string]float64
 // var mysqlOprationClassify map[string]mysqlOprationDuration
-
 
 func init() {
 	mysqlMonitorFuncs = []string{"mysql_query("}
@@ -56,15 +53,14 @@ func (m *MysqlMonitor) sqlParse(s string)  string {
 
 		return argsList[0]
 		// if strings.Contains(strings.ToLower(argsList[0]), "select") {
-		// 	//gMysqlreportData.MysqlOprationClassify["SELECT"] = 
-			
+		// 	//gMysqlreportData.MysqlOprationClassify["SELECT"] =
+
 		// }
 	}
 
 	return ""
 
 }
-
 
 func (m *MysqlMonitor) Parse(js *simplejson.Json) (*MysqlData, error) {
 	var err error
@@ -104,7 +100,7 @@ func (m *MysqlMonitor) Parse(js *simplejson.Json) (*MysqlData, error) {
 
 				indexWt := strings.Index(v, "wt")
 				indexTotal := strings.Index(v, "total")
-				
+
 				tmpTotal, err := strconv.ParseFloat(strings.TrimSpace(strings.Split(v[indexTotal:], ":")[1]), 64)
 				if err != nil {
 					glog.Error(err.Error())
@@ -118,7 +114,7 @@ func (m *MysqlMonitor) Parse(js *simplejson.Json) (*MysqlData, error) {
 
 				gMysqlTotalResTime += tmpTotal
 
-				gMysqlreportData.TotalReqCount ++ 
+				gMysqlreportData.TotalReqCount ++
 
 				gMysqlreportData.AverageRespTime = gMysqlTotalResTime / (float64)(gMysqlreportData.TotalReqCount)
 
@@ -136,13 +132,13 @@ func (m *MysqlMonitor) Parse(js *simplejson.Json) (*MysqlData, error) {
 							if mapVal < tmpTotal {
 								gMysqlreportData.Top5Slow[i] = mysqlSlowData
 								break
-							}					
+							}
 						}
 
 					}
 				}
 
-			} 
+			}
 			if strings.Contains(v, vv) && ! strings.Contains(v, "wt") {
 				//parse arguments
 				//m.argumentsParse(v)

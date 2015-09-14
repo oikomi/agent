@@ -5,7 +5,6 @@
  *      Author: miaohong(miaohong01@baidu.com)
  */
 
-
 package protocol
 
 import (
@@ -13,8 +12,6 @@ import (
 	"../module"
 	"../glog"
 )
-
-
 
 type Stat struct {
 	Time              int64
@@ -96,7 +93,6 @@ func BuildStat(js *simplejson.Json) (*Stat, error) {
 		glog.Error(err.Error())
 		return nil, err
 	}
-
 
 	tmpWebTrace := js.Get("web_trace")
 	if tmpWebTrace != nil {

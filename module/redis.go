@@ -5,7 +5,6 @@
  *      Author: miaohong(miaohong01@baidu.com)
  */
 
-
 package module
 
 import (
@@ -28,12 +27,10 @@ func init() {
 	gRedisReportData = NewRedisData()
 }
 
-
 func RedisInitData() {
 	gRedisTotalResTime = 0
 	gRedisReportData = NewRedisData()
 }
-
 
 type RedisMonitor struct {
 	funcDuration     []map[string]float64
@@ -69,7 +66,6 @@ func (m *RedisMonitor) Parse(js *simplejson.Json) (*RedisData, error) {
 		return nil, err
 	}
 
-
 	rawDataList := strings.Split(webTrace, "+")
 
 	for _, v := range rawDataList {
@@ -100,7 +96,6 @@ func (m *RedisMonitor) Parse(js *simplejson.Json) (*RedisData, error) {
 				redisSlowData.OpDuration = fd
 				redisSlowData.Time = tmpTime
 				redisSlowData.Script = tmpScript
-
 
 				if len(gRedisReportData.Top5Slow) < 5 {
 					gRedisReportData.Top5Slow = append(gRedisReportData.Top5Slow, redisSlowData)

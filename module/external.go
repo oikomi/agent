@@ -5,7 +5,6 @@
  *      Author: miaohong(miaohong01@baidu.com)
  */
 
-
 package module
 
 import (
@@ -32,7 +31,6 @@ func ExternalServiceInitData() {
 	gExternalServiceTotalResTime = 0
 	gExternalServiceReportData = NewExternalServiceData()
 }
-
 
 type ExternalServiceMonitor struct {
 	funcDuration     []map[string]float64
@@ -68,18 +66,17 @@ func (c *ExternalServiceMonitor) Parse(js *simplejson.Json) (*ExternalServiceDat
 		return nil, err
 	}
 
-
 	rawDataList := strings.Split(webTrace, "+")
 
 	for _, v := range rawDataList {
-		
+
 		for _, vv := range externalServiceMonitorFuncs {
 			if strings.Contains(v, vv) && strings.Contains(v, "wt") {
 				fd := make(map[string]float64)
 
 				indexWt := strings.Index(v, "wt")
 				indexTotal := strings.Index(v, "total")
-				
+
 				tmpTotal, err := strconv.ParseFloat(strings.TrimSpace(strings.Split(v[indexTotal:], ":")[1]), 64)
 				if err != nil {
 					glog.Error(err.Error())
@@ -88,10 +85,9 @@ func (c *ExternalServiceMonitor) Parse(js *simplejson.Json) (*ExternalServiceDat
 
 				fd[v[:indexWt]] = tmpTotal
 
-
 				gExternalServiceTotalResTime += tmpTotal
 
-				gExternalServiceReportData.TotalReqCount ++ 
+				gExternalServiceReportData.TotalReqCount ++
 
 				gExternalServiceReportData.AverageRespTime = gExternalServiceTotalResTime / (float64)(gExternalServiceReportData.TotalReqCount)
 
@@ -99,7 +95,6 @@ func (c *ExternalServiceMonitor) Parse(js *simplejson.Json) (*ExternalServiceDat
 				externalServiceSlowData.OpDuration = fd
 				externalServiceSlowData.Time = tmpTime
 				externalServiceSlowData.Script = tmpScript
-
 
 				if len(gExternalServiceReportData.Top5Slow) < 5 {
 					gExternalServiceReportData.Top5Slow = append(gExternalServiceReportData.Top5Slow, externalServiceSlowData)
@@ -109,7 +104,7 @@ func (c *ExternalServiceMonitor) Parse(js *simplejson.Json) (*ExternalServiceDat
 							if mapVal < tmpTotal {
 								gExternalServiceReportData.Top5Slow[i] = externalServiceSlowData
 								break
-							}					
+							}
 						}
 
 					}

@@ -5,9 +5,7 @@
  *      Author: miaohong(miaohong01@baidu.com)
  */
 
-
 package protocol
-
 
 import (
 	"sort"
@@ -30,7 +28,6 @@ func (sw StatsWrapper) Less(i, j int) bool {
     return sw.by(sw.stats[i], sw.stats[j])
 }
  
-
 func SortStats(stats []*Stat, by SortBy) {  
     sort.Sort(StatsWrapper{stats, by})
 }

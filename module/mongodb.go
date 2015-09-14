@@ -5,7 +5,6 @@
  *      Author: miaohong(miaohong01@baidu.com)
  */
 
-
 package module
 
 import (
@@ -28,12 +27,10 @@ func init() {
 	gMongodbReportData = NewMongodbData()
 }
 
-
 func MongodbInitData() {
 	gMongodbTotalResTime = 0
 	gMongodbReportData = NewMongodbData()
 }
-
 
 type MongodbMonitor struct {
 	funcDuration     []map[string]float64
@@ -69,7 +66,6 @@ func (m *MongodbMonitor) Parse(js *simplejson.Json) (*MongodbData, error) {
 		return nil, err
 	}
 
-
 	rawDataList := strings.Split(webTrace, "+")
 
 	for _, v := range rawDataList {
@@ -89,7 +85,6 @@ func (m *MongodbMonitor) Parse(js *simplejson.Json) (*MongodbData, error) {
 
 				fd[v[:indexWt]] = tmpTotal
 
-
 				gMongodbTotalResTime += tmpTotal
 
 				gMongodbReportData.TotalReqCount ++ 
@@ -100,7 +95,6 @@ func (m *MongodbMonitor) Parse(js *simplejson.Json) (*MongodbData, error) {
 				mongodbSlowData.OpDuration = fd
 				mongodbSlowData.Time = tmpTime
 				mongodbSlowData.Script = tmpScript
-
 
 				if len(gMongodbReportData.Top5Slow) < 5 {
 					gMongodbReportData.Top5Slow = append(gMongodbReportData.Top5Slow, mongodbSlowData)

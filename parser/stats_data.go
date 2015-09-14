@@ -5,7 +5,6 @@
  *      Author: miaohong(miaohong01@baidu.com)
  */
 
-
 package parser
 
 import (
@@ -33,7 +32,6 @@ func NewStatsSummary() *StatsSummary {
 	}
 }
 
-
 func StatsParse(path string) (*StatsSummary, error) {
 	s := NewStats()
 	statsSummary, err := s.parse(path)
@@ -44,7 +42,6 @@ func StatsParse(path string) (*StatsSummary, error) {
 
 	return statsSummary, nil
 }
-
 
 type Stats struct {
 	Time              string
@@ -84,7 +81,6 @@ func (s *Stats) buildStats(data []string) *Stats {
 	return nil
 }
 
-
 func (s *Stats) parse(path string) (*StatsSummary, error) {
 	var err error
 	var statsSummary *StatsSummary
@@ -111,7 +107,6 @@ func (s *Stats) parse(path string) (*StatsSummary, error) {
 		glog.Error(err.Error())
 		return nil, err
 	}
-
 
 	dataList := strings.Split(string(df.content), "\n")
 

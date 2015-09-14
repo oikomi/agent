@@ -5,7 +5,6 @@
  *      Author: miaohong(miaohong01@baidu.com)
  */
 
-
 package module
 
 import (
@@ -28,12 +27,10 @@ func init() {
 	gMemcacheReportData = NewMemcacheData()
 }
 
-
 func MemcacheInitData() {
 	gMemcacheTotalResTime = 0
 	gMemcacheReportData = NewMemcacheData()
 }
-
 
 type MemcacheMonitor struct {
 	funcDuration     []map[string]float64
@@ -69,7 +66,6 @@ func (m *MemcacheMonitor) Parse(js *simplejson.Json) (*MemcacheData, error) {
 		return nil, err
 	}
 
-
 	rawDataList := strings.Split(webTrace, "+")
 
 	for _, v := range rawDataList {
@@ -89,7 +85,6 @@ func (m *MemcacheMonitor) Parse(js *simplejson.Json) (*MemcacheData, error) {
 
 				fd[v[:indexWt]] = tmpTotal
 
-
 				gMemcacheTotalResTime += tmpTotal
 
 				gMemcacheReportData.TotalReqCount ++ 
@@ -100,7 +95,6 @@ func (m *MemcacheMonitor) Parse(js *simplejson.Json) (*MemcacheData, error) {
 				memcacheSlowData.OpDuration = fd
 				memcacheSlowData.Time = tmpTime
 				memcacheSlowData.Script = tmpScript
-
 
 				if len(gMemcacheReportData.Top5Slow) < 5 {
 					gMemcacheReportData.Top5Slow = append(gMemcacheReportData.Top5Slow, memcacheSlowData)

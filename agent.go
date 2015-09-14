@@ -5,7 +5,7 @@
  *      Author: miaohong(miaohong01@baidu.com)
  */
 
- package main
+package main
 
 import (
  	"fmt"
@@ -18,7 +18,6 @@ import (
 	"./proxy"
 	"./protocol"
 )
-
 
 /*
 #include <stdlib.h>
@@ -53,7 +52,6 @@ func init() {
 var InputConfFile = flag.String("conf_file", "agent.json", "input conf file name") 
 //var logFile = flag.String("log_dir", "/tmp/agent.log", "log file name") 
 
-
 func doParseEventsData(cfg *AgentConfig) {
 	events, err := parser.EventsParse(cfg.EventsDataPath)
 	if err != nil {
@@ -70,9 +68,8 @@ func doParseEventsData(cfg *AgentConfig) {
 	r := proxy.NewReqHttp(cfg.ReportServer + cfg.EventsDataService, "POST", 5)
 	r.SetHeader("Content-Type", "application/json")
 	r.SetHeader("X-App-License-Key", "e3550f68961d4bb3b14b777f347e7c15")
-	glog.Info(string(b))
+	//glog.Info(string(b))
 	
-
 	err = r.DoPostData(b)
 	if err != nil {
 		glog.Error(err.Error())
@@ -122,40 +119,6 @@ func doFileProc(cfg *AgentConfig) {
 		}
 	}
 }
-
-
-// func doUnixProc(cfg *AgentConfig, addr string) {
-// 	_, err := os.Stat(addr)
-// 	if err != nil && os.IsNotExist(err) {
-		
-// 	} else {
-// 		err := os.Remove(addr)
-// 	    if err != nil {
-// 	    	glog.Error(err.Error())
-// 			return
-// 	    } 
-// 	}
-
-// 	l, err := net.ListenUnix("unix",  &net.UnixAddr{addr, "unix"})
-// 	if err != nil {
-// 	    panic(err)
-// 	}
-// 	defer os.Remove(addr)
-
-// 	for {
-// 	    conn, err := l.AcceptUnix()
-// 	    if err != nil {
-// 	        panic(err)
-// 	    }
-// 	    var buf [1024]byte
-// 	    n, err := conn.Read(buf[:])
-// 	    if err != nil {
-// 	        panic(err)
-// 	    }
-// 	    fmt.Printf("%s\n", string(buf[:n]));
-// 	    conn.Close()
-// 	}
-// }
 
 func parseProtocol(cfg *AgentConfig) {
 	l := strings.Split(cfg.Protocol, "|")

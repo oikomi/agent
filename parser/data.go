@@ -5,7 +5,6 @@
 //  *      Author: miaohong(miaohong01@baidu.com)
 //  */
 
-
 package parser
 
 // import (

@@ -24,7 +24,6 @@ func NewDataFile(filePath string) *DataFile {
 	}
 }
 
-
 func (f *DataFile) isFileExist() bool {
 	_, err := os.Stat(f.filePath)
 	if err != nil && os.IsNotExist(err) {
@@ -65,20 +64,6 @@ func (f *DataFile) GetAllContent() error {
     	glog.Error(err.Error())
 		return err
     } 
-
- //    fd, err := os.Open(f.filePath)
- //    defer fd.Close()  
-
- //    if err != nil {		
- //    	glog.Error(err.Error())
-	// 	return err
-	// }  
-    
- //    f.content, err = ioutil.ReadAll(fd)  
-	// if err != nil {		
- //    	glog.Error(err.Error())
-	// 	return err
-	// }   
 
     return err
 }

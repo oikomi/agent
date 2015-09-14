@@ -5,7 +5,6 @@
  *      Author: miaohong(miaohong01@baidu.com)
  */
 
-
 package protocol
 
 import (
@@ -23,20 +22,18 @@ import (
 	"../module"
 )
 
-
 func DoUnixProc(addr string) error {
 	up := NewUnixProto(addr)
 	err := up.deleteSock()
     if err != nil {
     	glog.Error(err.Error())
-		//return err
+		return err
     } 
 
     up.run()
 
     return err
 }
-
 
 var	greportStatData   *StatSummary
 var	greportEventData  *EventSummary
@@ -105,7 +102,6 @@ func ReportStatData() {
 	module.MongodbInitData()
 	module.RedisInitData()
 	module.ExternalServiceInitData()
-
 
 	err = r.DoPostData(b)
 	if err != nil {
@@ -184,7 +180,6 @@ func (u *UnixProto) contentParse(data []byte) error {
 		return err
 	}
 
-
 	//add for db and external services
 	if len(s.WebTrace) != 0 {
 		mysqlMonitor := module.NewMysqlMonitor()
@@ -215,7 +210,6 @@ func (u *UnixProto) contentParse(data []byte) error {
 			return err
 		}
 
-
 		externalServiceMonitor := module.NewExternalServiceMonitor()
 		greportStatData.ExternalServiceData, err = externalServiceMonitor.Parse(js)
 		if err != nil {
@@ -224,8 +218,6 @@ func (u *UnixProto) contentParse(data []byte) error {
 		}	
 
 	}
-
-	//
 
 	if len(greportStatData.Top5Slow) == 5 {
 		sort.Sort(StatsWrapper{greportStatData.Top5Slow, func (p, q *Stat) bool {
@@ -244,7 +236,6 @@ func (u *UnixProto) contentParse(data []byte) error {
 			}
 		} 
 	}
-
 
 	_, err = js.Get("errors").Array()
 	if err == nil {
